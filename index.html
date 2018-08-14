@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- Standard Meta -->
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/semantic.min.css" />
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/semantic.min.js"></script>
+
+  <!-- include the cornerstone library -->
+  <script src="/ext/dicomParser.js"></script>
+  <script src="/ext/cornerstone.js"></script>
+  <script src="/ext/cornerstoneMath.js"></script>
+  <script src="/ext/cornerstoneTools.js"></script>
+  <script src="/ext/cornerstoneWADOImageLoader.js"></script>
+
+  <script src="https://fpcdn.s3.amazonaws.com/apps/polygon-tools/0.4.6/polygon-tools.min.js"></script>
+  <script src="/ext/simplify.js"></script>
+  <script src="/ext/nudged.js"></script>
+  <script src="/src/svgBrushTool.js"></script>
+
+  <script src="/ext/dat.gui.min.js"></script>
+
+  <style type="text/css">
+    .dicom * {
+      touch-action: none;
+    }
+
+    .dicom {
+      touch-action: none;
+    }
+  </style>
+
+</head>
+
+<body>
+  <!-- <div class="ui text container">  -->
+
+    <div id="dicomImage" class='dicom' style="width:1024px;height:1024px;position: relative;" oncontextmenu="return false" class='cornerstone-enabled-image'
+      unselectable='on' onselectstart='return false;' onmousedown='return false;'>
+      <svg id='svg' height='1024' width='1024' version="1.1" xmlns="http://www.w3.org/2000/svg" style="position: absolute"></svg>
+    </div>
+
+     <!-- </div> -->
+</body>
+
+<script>
+  function fullscreenDiv(element) {
+
+    function doResize() {
+      const width = window.innerWidth
+      const height = window.innerHeight
+
+
+      const svgElement = document.getElementById('svg');
+      svgElement.width.baseVal.value = width;
+      svgElement.height.baseVal.value = height;
+
+
+      element.style.width = width + 'px';
+      element.style.height = height + 'px';
+      cornerstone.resize(element);
+    }
+    // resize the canvas to fill browser window dynamically
+    window.addEventListener('resize', doResize, false)
+    // Initially resized to fullscreen.
+    doResize()
+  }
+
+  $(document).ready(function () {
+    cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
+    var config = {
+        webWorkerPath : '/ext/cornerstoneWADOImageLoaderWebWorker.js',
+        taskConfiguration: {
+            'decodeTask' : {
+                codecsPath: '/ext/cornerstoneWADOImageLoaderCodecs.js'
+            }
+        }
+    };
+    cornerstoneWADOImageLoader.webWorkerManager.initialize(config);
+
+    const imageId = `wadouri:http://${window.location.host}/testdata/000123.dcm`;
+
+    var element = document.getElementById('dicomImage');
+    cornerstone.enable(element);
+    fullscreenDiv(element)
+    cornerstone.loadImage(imageId).then(function (image) {
+      cornerstone.displayImage(element, image);
+      const enabledElement = cornerstone.getEnabledElement(element);
+      cornerstoneTools.mouseInput.enable(element);
+      cornerstoneTools.mouseWheelInput.enable(element);
+      cornerstoneTools.svgBrush.enable(element);
+      cornerstoneTools.svgBrush.activate(element, 1);
+      cornerstoneTools.pan.activate(element, 2);
+      cornerstoneTools.zoom.activate(element, 4);
+      // cornerstoneTools.wwwc.activate(element, 1);
+
+      var gui = new dat.GUI();
+      var config = cornerstoneTools.svgBrush.getConfiguration();
+      gui.add(config, 'radius', 1, 32).listen();
+      gui.add(config, 'segmentationIndex', 0, 2).step(1).listen();
+      gui.add(config, 'simplifyPrecision', 0, 2).step(.01).listen();
+      const voi = enabledElement.viewport.voi;
+      const voichange = ()=>{
+        enabledElement.viewport.voi = voi;
+        cornerstone.setViewport(element, enabledElement.viewport);
+      }
+
+      gui.add(voi, 'windowCenter', -1000, 1000).listen().onChange(voichange);
+      gui.add(voi, 'windowWidth', 0, 2000).listen().onChange(voichange);
+
+
+    });
+  });
+</script>
+
+</html>

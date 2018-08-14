@@ -1,0 +1,16 @@
+{
+  "name": "webgl2-test",
+  "version": "0.0.1",
+  "description": "sdx",
+  "main": "index.js",
+  "scripts": {
+    "start": "forever -w app.js"
+  },
+  "author": "JF Pambrun",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.3",
+    "prettifier": "^0.3.5"
+  },
+  "devDependencies": {}
+}
