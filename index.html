@@ -12,18 +12,18 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/semantic.min.js"></script>
 
   <!-- include the cornerstone library -->
-  <script src="/ext/dicomParser.js"></script>
-  <script src="/ext/cornerstone.js"></script>
-  <script src="/ext/cornerstoneMath.js"></script>
-  <script src="/ext/cornerstoneTools.js"></script>
-  <script src="/ext/cornerstoneWADOImageLoader.js"></script>
+  <script src="./ext/dicomParser.js"></script>
+  <script src="./ext/cornerstone.js"></script>
+  <script src="./ext/cornerstoneMath.js"></script>
+  <script src="./ext/cornerstoneTools.js"></script>
+  <script src="./ext/cornerstoneWADOImageLoader.js"></script>
 
   <script src="https://fpcdn.s3.amazonaws.com/apps/polygon-tools/0.4.6/polygon-tools.min.js"></script>
-  <script src="/ext/simplify.js"></script>
-  <script src="/ext/nudged.js"></script>
-  <script src="/src/svgBrushTool.js"></script>
+  <script src="./ext/simplify.js"></script>
+  <script src="./ext/nudged.js"></script>
+  <script src="./src/svgBrushTool.js"></script>
 
-  <script src="/ext/dat.gui.min.js"></script>
+  <script src="./ext/dat.gui.min.js"></script>
 
   <style type="text/css">
     .dicom * {
@@ -83,7 +83,7 @@
     };
     cornerstoneWADOImageLoader.webWorkerManager.initialize(config);
 
-    const imageId = `wadouri:http://${window.location.host}/testdata/000123.dcm`;
+    const imageId = `wadouri:./testdata/000123.dcm`;
 
     var element = document.getElementById('dicomImage');
     cornerstone.enable(element);
